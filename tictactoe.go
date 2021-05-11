@@ -10,11 +10,11 @@ type player struct {
 func printBoard(board [3][3]rune) {
 	for rowIndex, row := range board {
 		if rowIndex > 0 {
-			fmt.Println("─┼─┼─")
+			fmt.Println("━╋━╋━")
 		}
 		for colIndex, val := range row {
 			if colIndex > 0 {
-				fmt.Print("│")
+				fmt.Print("┃")
 			}
 			if val == 0 {
 				squareIndex := rowIndex*3 + colIndex + 1
