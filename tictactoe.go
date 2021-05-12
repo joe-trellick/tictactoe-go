@@ -6,6 +6,10 @@ import (
 	"strconv"
 )
 
+const redColor = "\033[31;1m"
+const grayColor = "\033[38;5;239m"
+const resetColor = "\033[0m"
+
 type player struct {
 	name  string
 	piece rune
@@ -23,7 +27,7 @@ func printBoard(board [3][3]rune) {
 			}
 			if val == 0 {
 				squareIndex, _ := indicesToSquareNumber(rowIndex, colIndex)
-				fmt.Print(squareIndex)
+				fmt.Print(grayColor + fmt.Sprint(squareIndex) + resetColor)
 			} else {
 				var boardVal string
 				if val == '❌' {
@@ -31,7 +35,7 @@ func printBoard(board [3][3]rune) {
 				} else {
 					boardVal = "O"
 				}
-				fmt.Print(boardVal)
+				fmt.Print(redColor + boardVal + resetColor)
 			}
 		}
 		fmt.Println()
