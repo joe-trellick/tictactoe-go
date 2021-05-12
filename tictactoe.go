@@ -76,21 +76,19 @@ func main() {
 		printBoard(board)
 
 		currentPlayer := players[turn%2]
-		fmt.Println(string(currentPlayer.piece) + " " + currentPlayer.name + ", please enter your move:")
+		fmt.Print(string(currentPlayer.piece) + " " + currentPlayer.name + ", please enter your move: ")
 		var moveInput string
 		fmt.Scanln(&moveInput)
 
 		number, inputError := strconv.Atoi(moveInput)
-		if inputError != nil {
+		rowIndex, colIndex, inputError2 := squareNumberToIndices(number)
+
+		if inputError != nil || inputError2 != nil {
 			fmt.Println("Please enter a square number from the board")
-		} else {
-			rowIndex, colIndex, inputError := squareNumberToIndices(number)
-			if inputError != nil {
-				fmt.Println("Please enter a square number from the board")
-			} else {
-				board[rowIndex][colIndex] = currentPlayer.piece
-				turn += 1
-			}
+			continue
 		}
+
+		board[rowIndex][colIndex] = currentPlayer.piece
+		turn += 1
 	}
 }
