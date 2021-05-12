@@ -88,6 +88,11 @@ func main() {
 			continue
 		}
 
+		if board[rowIndex][colIndex] != 0 {
+			fmt.Println("That square is taken, please choose an empty one")
+			continue
+		}
+
 		board[rowIndex][colIndex] = currentPlayer.piece
 		turn += 1
 	}
