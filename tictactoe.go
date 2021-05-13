@@ -6,11 +6,13 @@ import (
 	"strconv"
 )
 
+// console text color codes
 const redColor = "\033[31;1m"
 const grayColor = "\033[38;5;239m"
 const resetColor = "\033[0m"
 const reverseColor = "\033[7m"
 
+// different lines to check for wins (expressed in square numbers)
 var lines = [8][3]int{
 	{1, 2, 3},
 	{4, 5, 6},
@@ -113,6 +115,17 @@ func evaluateLines(board [3][3]rune) [8]lineEval {
 	return result
 }
 
+func getFreeSquareNumbers(board [3][3]rune) []int {
+	var result []int
+	for squareNumber := 1; squareNumber <= 9; squareNumber++ {
+		rowIndex, colIndex, _ := squareNumberToIndices(squareNumber)
+		if board[rowIndex][colIndex] == 0 {
+			result = append(result, squareNumber)
+		}
+	}
+	return result
+}
+
 func main() {
 	var board [3][3]rune
 
@@ -128,6 +141,13 @@ func main() {
 	for !(hasWinner || hasDraw) {
 
 		printBoard(board)
+
+		freeSquares := getFreeSquareNumbers(board)
+		if len(freeSquares) == 0 {
+			hasDraw = true
+			fmt.Println("We have a " + redColor + "DRAW" + resetColor + ", stop playing so well, everbody!")
+			continue
+		}
 
 		currentPlayer := players[turn%2]
 		fmt.Print(string(currentPlayer.piece) + " " + currentPlayer.name + ", please enter your move: ")
@@ -153,7 +173,6 @@ func main() {
 			if eval.winningPiece != 0 {
 				hasWinner = true
 				printBoardWithHighlight(board, eval.line[:])
-				//				printBoard(board)
 				fmt.Println("We have a winner: " + string(eval.winningPiece))
 			}
 		}
