@@ -9,6 +9,7 @@ import (
 const redColor = "\033[31;1m"
 const grayColor = "\033[38;5;239m"
 const resetColor = "\033[0m"
+const reverseColor = "\033[7m"
 
 var lines = [8][3]int{
 	{1, 2, 3},
@@ -32,6 +33,10 @@ type lineEval struct {
 }
 
 func printBoard(board [3][3]rune) {
+	printBoardWithHighlight(board, []int{})
+}
+
+func printBoardWithHighlight(board [3][3]rune, line []int) {
 	fmt.Println()
 	for rowIndex, row := range board {
 		if rowIndex > 0 {
@@ -41,8 +46,13 @@ func printBoard(board [3][3]rune) {
 			if colIndex > 0 {
 				fmt.Print("┃")
 			}
+			squareIndex, _ := indicesToSquareNumber(rowIndex, colIndex)
+			for _, lineSquareIndex := range line {
+				if lineSquareIndex == squareIndex {
+					fmt.Print(reverseColor)
+				}
+			}
 			if val == 0 {
-				squareIndex, _ := indicesToSquareNumber(rowIndex, colIndex)
 				fmt.Print(grayColor + fmt.Sprint(squareIndex) + resetColor)
 			} else {
 				var boardVal string
@@ -142,7 +152,8 @@ func main() {
 		for _, eval := range evaluateLines(board) {
 			if eval.winningPiece != 0 {
 				hasWinner = true
-				printBoard(board)
+				printBoardWithHighlight(board, eval.line[:])
+				//				printBoard(board)
 				fmt.Println("We have a winner: " + string(eval.winningPiece))
 			}
 		}
