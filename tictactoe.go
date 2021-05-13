@@ -155,18 +155,20 @@ func main() {
 		fmt.Scanln(&moveInput)
 
 		number, inputError := strconv.Atoi(moveInput)
-		rowIndex, colIndex, inputError2 := squareNumberToIndices(number)
+		inFreeSquares := false
+		for _, squareNumber := range freeSquares {
+			if number == squareNumber {
+				inFreeSquares = true
+				break
+			}
+		}
 
-		if inputError != nil || inputError2 != nil {
-			fmt.Println("Please enter a square number from the board")
+		if inputError != nil || !inFreeSquares {
+			fmt.Println(redColor + "Please enter a free square number from the board" + resetColor)
 			continue
 		}
 
-		if board[rowIndex][colIndex] != 0 {
-			fmt.Println("That square is taken, please choose an empty one")
-			continue
-		}
-
+		rowIndex, colIndex, _ := squareNumberToIndices(number)
 		board[rowIndex][colIndex] = currentPlayer.piece
 
 		for _, eval := range evaluateLines(board) {
