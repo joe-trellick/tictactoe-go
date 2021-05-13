@@ -10,9 +10,25 @@ const redColor = "\033[31;1m"
 const grayColor = "\033[38;5;239m"
 const resetColor = "\033[0m"
 
+var lines = [8][3]int{
+	{1, 2, 3},
+	{4, 5, 6},
+	{7, 8, 9},
+	{1, 4, 7},
+	{2, 5, 8},
+	{3, 6, 9},
+	{1, 5, 9},
+	{3, 5, 7},
+}
+
 type player struct {
 	name  string
 	piece rune
+}
+
+type lineEval struct {
+	line         [3]int
+	winningPiece rune
 }
 
 func printBoard(board [3][3]rune) {
@@ -64,6 +80,29 @@ func indicesToSquareNumber(rowIndex int, colIndex int) (squareNumber int, err er
 	return rowIndex*3 + colIndex + 1, nil
 }
 
+func evaluateLines(board [3][3]rune) [8]lineEval {
+	result := [8]lineEval{}
+	for lineIndex, line := range lines {
+		var xCount, oCount int
+		for _, squareNumber := range line {
+			rowIndex, colIndex, _ := squareNumberToIndices(squareNumber)
+			if board[rowIndex][colIndex] == '❌' {
+				xCount += 1
+			} else if board[rowIndex][colIndex] == '⭕' {
+				oCount += 1
+			}
+		}
+		var winningPiece rune
+		if xCount == 3 {
+			winningPiece = '❌'
+		} else if oCount == 3 {
+			winningPiece = '⭕'
+		}
+		result[lineIndex] = lineEval{line: line, winningPiece: winningPiece}
+	}
+	return result
+}
+
 func main() {
 	var board [3][3]rune
 
@@ -72,10 +111,11 @@ func main() {
 	players := [2]player{player1, player2}
 	turn := 0
 	var hasWinner bool
+	var hasDraw bool
 
 	fmt.Print("\n\nWelcome to TIC ❌ TAC ⭕ TOE\n\n")
 
-	for !hasWinner {
+	for !(hasWinner || hasDraw) {
 
 		printBoard(board)
 
@@ -98,6 +138,15 @@ func main() {
 		}
 
 		board[rowIndex][colIndex] = currentPlayer.piece
+
+		for _, eval := range evaluateLines(board) {
+			if eval.winningPiece != 0 {
+				hasWinner = true
+				printBoard(board)
+				fmt.Println("We have a winner: " + string(eval.winningPiece))
+			}
+		}
+
 		turn += 1
 	}
 }
