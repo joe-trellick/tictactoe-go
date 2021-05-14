@@ -29,6 +29,9 @@ type player struct {
 	piece rune
 }
 
+// A "line" is a possible way of winning in the game (rows, columns, diagonals)
+// expressed as the square numbers of the three squares in that line.
+// A "lineEval" is the result of evaluating the state of that line on the board.
 type lineEval struct {
 	line         [3]int
 	winningPiece rune
@@ -115,6 +118,8 @@ func evaluateLines(board [3][3]rune) [8]lineEval {
 	return result
 }
 
+// Returns a slice of the square numbers that still represent
+// playable squares.
 func getFreeSquareNumbers(board [3][3]rune) []int {
 	var result []int
 	for squareNumber := 1; squareNumber <= 9; squareNumber++ {

@@ -5,4 +5,6 @@ This is my first Go program.
 
 ![](screenshot-start.png)
 
+...
+
 ![](screenshot-win.png)
