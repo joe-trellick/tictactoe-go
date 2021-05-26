@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"math/rand"
 	"strconv"
 )
 
@@ -25,8 +26,9 @@ var lines = [8][3]int{
 }
 
 type player struct {
-	name  string
-	piece rune
+	name       string
+	piece      rune
+	isComputer bool
 }
 
 type lineEval struct {
@@ -126,11 +128,16 @@ func getFreeSquareNumbers(board [3][3]rune) []int {
 	return result
 }
 
+func computerMove(computerPlayer player, board [3][3]rune, freeSquares []int) int {
+	index := rand.Intn(len(freeSquares))
+	return freeSquares[index]
+}
+
 func main() {
 	var board [3][3]rune
 
 	player1 := player{name: "Player 1", piece: '❌'}
-	player2 := player{name: "Player 2", piece: '⭕'}
+	player2 := player{name: "Computer Player 2", piece: '⭕', isComputer: true}
 	players := [2]player{player1, player2}
 	turn := 0
 	var hasWinner bool
@@ -150,24 +157,33 @@ func main() {
 		}
 
 		currentPlayer := players[turn%2]
-		fmt.Print(string(currentPlayer.piece) + " " + currentPlayer.name + ", please enter your move: ")
-		var moveInput string
-		fmt.Scanln(&moveInput)
 
-		number, inputError := strconv.Atoi(moveInput)
-		inFreeSquares := false
-		for _, squareNumber := range freeSquares {
-			if number == squareNumber {
-				inFreeSquares = true
-				break
+		var number int
+		if currentPlayer.isComputer {
+			number = computerMove(currentPlayer, board, freeSquares)
+			fmt.Printf("Computer player chose: %d\n", number)
+		} else {
+			fmt.Print(string(currentPlayer.piece) + " " + currentPlayer.name + ", please enter your move: ")
+			var moveInput string
+			fmt.Scanln(&moveInput)
+
+			var inputError error
+			number, inputError = strconv.Atoi(moveInput)
+			inFreeSquares := false
+			for _, squareNumber := range freeSquares {
+				if number == squareNumber {
+					inFreeSquares = true
+					break
+				}
+			}
+
+			if inputError != nil || !inFreeSquares {
+				fmt.Println(redColor + "Please enter a free square number from the board" + resetColor)
+				continue
 			}
 		}
 
-		if inputError != nil || !inFreeSquares {
-			fmt.Println(redColor + "Please enter a free square number from the board" + resetColor)
-			continue
-		}
-
+		fmt.Printf("Move was %d\n", number)
 		rowIndex, colIndex, _ := squareNumberToIndices(number)
 		board[rowIndex][colIndex] = currentPlayer.piece
 
